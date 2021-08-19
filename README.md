@@ -1,10 +1,11 @@
 # Faust.jl
 
-Julia wrapper for the [Faust](https://faust.grame.fr/) compiler.
+Julia wrapper for the [Faust](https://faust.grame.fr/) compiler. It can be used:
 
-Uses the Faust LLVM [C API](https://github.com/grame-cncm/faust/blob/master-dev/architecture/faust/dsp/llvm-c-dsp.h).
+- with the libfaust version of the Faust compiler, and more specifically the Faust LLVM [C API](https://github.com/grame-cncm/faust/blob/master-dev/architecture/faust/dsp/llvm-c-dsp.h).
+- with the [Julia backend](https://github.com/grame-cncm/faust/tree/master-dev/compiler/generator/julia) that allows to generate Julia source code, to be included and used in the Julia session.
 
-## Usage
+## Using the libfaust compiler
 
 ```julia
 using Faust
@@ -64,3 +65,24 @@ setparams!(dsp, Dict("/score/freq" => 220.0f0))
 
 See [examples/portaudio.jl](examples/portaudio.jl) to understand how the DSP can
 be wrapped for audio IO.
+
+The DSP program ouputs can be idplaayed with 
+
+```julia
+# Define a block of DSP code
+julia> code = """import("stdfaust.lib"); process = os.osc(500), os.sawtooth(1000);"""
+
+# Compile the DSP, compute one block of audio and display the outputs
+julia> compileFaustMinimalJulia2(code)
+```
+
+## Using the Julia backend
+
+```julia
+# Use an existing DSP file
+julia> file = "/fool/bar/osc.dsp"
+
+# Compile the DSP, compute one block of audio and display the outputs
+julia> compileFaustMinimalJulia1(file)
+
+```

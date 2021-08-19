@@ -201,20 +201,6 @@ function compileFaustMinimalJulia(file)
     include(file * ".jl")
 end
 
-function compileFaustMinimalJulia1(file)
-    name = file2name(file)
-    arch = faustPath() * "/minimal.jl"
-    Base.run(`faust -lang julia $(file) -a $(arch) -cn $(name) -o $(file).jl`)
-    include(file * ".jl")
-end
-
-function compileFaustMinimalJulia2(code)
-    block = compile(code)
-    block = init!(block; block_size=256, samplerate=44100) 
-    outputs = compute!(block)
-    display(plot(outputs, layout = (getNumOutputsCDSPInstance(block.dsp), 1)))
-end
-
 function compileFaustPAGTKJulia(file)
     name = file2name(file)
     Base.run(`faust2portaudiojulia -play 2 $(file)`)
@@ -227,6 +213,23 @@ function compileFaustPAOSCJulia(file)
     include(file * ".jl")
 end
 
-export compileFaustMinimalJulia1, compileFaustMinimalJulia2
+
+# Export
+
+function compileFaustFile(file)
+    name = file2name(file)
+    arch = faustPath() * "/minimal.jl"
+    Base.run(`faust -lang julia $(file) -a $(arch) -cn $(name) -o $(file).jl`)
+    include(file * ".jl")
+end
+
+function compileFaustString(code)
+    block = compile(code)
+    block = init!(block; block_size=256, samplerate=44100) 
+    outputs = compute!(block)
+    display(plot(outputs, layout = (getNumOutputsCDSPInstance(block.dsp), 1)))
+end
+
+export compileFaustFile, compileFaustString
 
 end # module
