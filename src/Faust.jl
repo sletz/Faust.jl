@@ -1,5 +1,7 @@
 module Faust
 
+using Plots
+
 # ==============================
 # For low-level libfaust access
 # ==============================
@@ -206,6 +208,13 @@ function compileFaustMinimalJulia1(file)
     include(file * ".jl")
 end
 
+function compileFaustMinimalJulia2(code)
+    block = compile(code)
+    block = init!(block; block_size=256, samplerate=44100) 
+    outputs = compute!(block)
+    display(plot(outputs, layout = (getNumOutputsCDSPInstance(block.dsp), 1)))
+end
+
 function compileFaustPAGTKJulia(file)
     name = file2name(file)
     Base.run(`faust2portaudiojulia -play 2 $(file)`)
@@ -218,6 +227,6 @@ function compileFaustPAOSCJulia(file)
     include(file * ".jl")
 end
 
-export compileFaustMinimalJulia1
+export compileFaustMinimalJulia1, compileFaustMinimalJulia2
 
 end # module
