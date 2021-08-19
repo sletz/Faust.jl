@@ -4,17 +4,21 @@ mutable struct PathBuilder
     controlsLevel::Array{String}
 end
 
-function pushLabel(builder::PathBuilder, label::String)
+function pushLabel!(builder::PathBuilder, label::String)
     push!(builder.controlsLevel, label)
 end
 
-function popLabel(builder::PathBuilder)
+function popLabel!(builder::PathBuilder)
     deleteat!(builder.controlsLevel, lastindex(builder.controlsLevel))
 end
 
 function buildPath(builder::PathBuilder, label::String)
     path = join(builder.controlsLevel, "/")
-    "/$path/$label"
+    res = "/$path/$label"
+    for c in [' ', '#', '*', ',', '?', '[', ']', '{', '}', '(', ')'] 
+        res = replace(res, c => '_')
+    end
+    res
 end
 
 mutable struct GlueFns
@@ -68,31 +72,31 @@ mutable struct UIGlue
         uglue.paths = Dict{String, Ptr{Float32}}()
         uglue.pathBuilder = PathBuilder([])
         uglue.ranges = Dict{String, UIRange}()
-        initGlue(uglue)
+        initGlue!(uglue)
     end
 end
 
-function initGlue(uglue::UIGlue)
+function initGlue!(uglue::UIGlue)
     function _openTabBox(ui, label)::Cvoid
-        pushLabel(uglue.pathBuilder, unsafe_string(label))
+        pushLabel!(uglue.pathBuilder, unsafe_string(label))
         nothing
     end
     openTabBox = @cfunction($_openTabBox, Cvoid, (Ptr{Cvoid}, Cstring))
     
     function _openHorizontalBox(ui, label)::Cvoid
-        pushLabel(uglue.pathBuilder, unsafe_string(label))
+        pushLabel!(uglue.pathBuilder, unsafe_string(label))
         nothing
     end
     openHorizontalBox = @cfunction($_openHorizontalBox, Cvoid, (Ptr{Cvoid}, Cstring))
     
     function _openVerticalBox(ui, label)::Cvoid
-        pushLabel(uglue.pathBuilder, unsafe_string(label))
+        pushLabel!(uglue.pathBuilder, unsafe_string(label))
         nothing
     end
     openVerticalBox = @cfunction($_openVerticalBox, Cvoid, (Ptr{Cvoid}, Cstring))
 
     function _closeBox(ui)::Cvoid
-        popLabel(uglue.pathBuilder)
+        popLabel!(uglue.pathBuilder)
         nothing
     end
     closeBox = @cfunction($_closeBox, Cvoid, (Ptr{Cvoid},))

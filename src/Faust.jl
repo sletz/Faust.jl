@@ -1,8 +1,11 @@
 module Faust
 
-export DSPBlock, compile, init!, compute!, setparams!
+# ==============================
+# For low-level libfaust access
+# ==============================
 
 include("llvm-c-dsp.jl")
+export DSPBlock, compile, init!, compute!, setparams!
 
 FaustFloat = Union{Float32, Float64}
 
@@ -135,4 +138,86 @@ function setparams!(d::DSPBlock{T}, params) where T <: FaustFloat
     end
 end
 
+# =====================
+# Julia backend access
+# =====================
+
+#const FAUSTFLOAT = FaustFloat
+const FAUSTFLOAT = Float32
+
+# Faust architecture files using the standard dsp/, audio/, gui/ hierarchy
+
+# DSP layer
+include("dsp/dsp.jl")
+export dsp
+
+# audio layer
+include("audio/audio.jl")
+include("audio/portaudio.jl")
+export audio, portaudio, init!, run!, start!, stop!
+
+# GUI layer
+include("gui/meta.jl")
+export FMeta, declare! 
+
+include("gui/UI.jl")
+export UI, openTabBox!, openHorizontalBox!, openVerticalBox!, closeBox!
+export addButton!, addCheckButton!
+export addHorizontalSlider!, addVerticalSlider!, addNumEntry!
+export addHorizontalBargraph!, addVerticalBargraph!
+export addSoundfile!, declare! 
+
+include("gui/MapUI.jl")
+export MapUI, setParamValue!, getParamValue, getZoneMap, getRoot
+
+include("gui/OSCUI.jl")
+include("gui/GTKUI.jl")
+export GTKUI, OSCUI, run!
+
+# ======
+# Tools
+# ======
+
+function faustPath()
+    return dirname(pathof(Faust))
 end
+
+function file2name(file)
+    return last(split(split(file, '.')[1], '/'))
+end
+
+function compileFaust(file)
+    name = file2name(file)
+    exp = `$(faust) -lang cpp $(file) -cn $name -o $(file).cpp`
+    Base.run(exp)
+end
+
+function compileFaustMinimalJulia(file)
+    name = file2name(file)
+    arch = faustPath() * "/minimal.jl"
+    Base.run(`faust -lang julia $(file) -a julia/minimal.jl -cn $(name) -o $(file).jl`)
+    include(file * ".jl")
+end
+
+function compileFaustMinimalJulia1(file)
+    name = file2name(file)
+    arch = faustPath() * "/minimal.jl"
+    Base.run(`faust -lang julia $(file) -a $(arch) -cn $(name) -o $(file).jl`)
+    include(file * ".jl")
+end
+
+function compileFaustPAGTKJulia(file)
+    name = file2name(file)
+    Base.run(`faust2portaudiojulia -play 2 $(file)`)
+    include(file * ".jl")
+end
+
+function compileFaustPAOSCJulia(file)
+    name = file2name(file)
+    Base.run(`faust2portaudiojulia -play 2 -osc $(file)`)   
+    include(file * ".jl")
+end
+
+export compileFaustMinimalJulia1
+
+end # module
