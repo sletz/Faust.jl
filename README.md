@@ -66,23 +66,26 @@ setparams!(dsp, Dict("/score/freq" => 220.0f0))
 See [examples/portaudio.jl](examples/portaudio.jl) to understand how the DSP can
 be wrapped for audio IO.
 
-The DSP program ouputs can be idplaayed with 
+The DSP program outputs can be displayed with: 
 
 ```julia
 # Define a block of DSP code
 julia> code = """import("stdfaust.lib"); process = os.osc(500), os.sawtooth(1000);"""
 
 # Compile the DSP, compute one block of audio and display the outputs
-julia> compileFaustMinimalJulia2(code)
+julia> compileFaustString(code)
 ```
 
 ## Using the Julia backend
+
+From a DSP source file, the **faust** compiler is executed with the [Julia backend](https://github.com/grame-cncm/faust/tree/master-dev/compiler/generator/julia) to generate a Julia source file, wrapped by the [minimal.jl](https://github.com/sletz/Faust.jl/blob/main/src/minimal.jl) architecture file, computes one block of outputs buffers, and display them:
 
 ```julia
 # Use an existing DSP file
 julia> file = "/fool/bar/osc.dsp"
 
 # Compile the DSP, compute one block of audio and display the outputs
-julia> compileFaustMinimalJulia1(file)
+julia> compileFaustFile(file)
 
 ```
+
