@@ -47,7 +47,7 @@ Compiles `code` to a `DSPBlock`.
 
 # Examples
 ```julia-repl
-julia> d = compile("import(\"stdfaust.lib\"); process = os.osc(freq) : *(0.25) <: _, _;")
+julia> d = compile("import(\"stdfaust.lib\"); process = os.osc(freq) : *(0.25) <: _,_;")
 ```
 """
 function compile(code; name="score", argv=[], target="", opt=-1)

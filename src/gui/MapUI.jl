@@ -45,10 +45,10 @@ end
 # UIZone with for sliders, nentries and bargraph
 struct UIZone
     field::Symbol
-    init::Float32
-    min::Float32
-    max::Float32
-    step::Float32
+    init::FAUSTFLOAT
+    min::FAUSTFLOAT
+    max::FAUSTFLOAT
+    step::FAUSTFLOAT
 end
 
 # MapUI to keep [path,Symbol] and [label,Symbol] maps

@@ -38,7 +38,7 @@ output as a matrix of (block_size, n_channels). If the program takes input,
 set `dsp.inputs` to a (block_size, n_channels) matrix before calling `compute!`:
 
 ```julia
-passthrough = init!(compile("process = _, _;"))
+passthrough = init!(compile("process = _,_;"))
 x = rand(Float32, 256, 2)
 passthrough.inputs = x
 @test compute!(passthrough) == x
@@ -78,7 +78,7 @@ julia> compileFaustString(code)
 
 ## Using the Julia backend
 
-From a DSP source file, the **faust** compiler is executed with the [Julia backend](https://github.com/grame-cncm/faust/tree/master-dev/compiler/generator/julia) to generate a Julia source file, wrapped by the [minimal.jl](https://github.com/sletz/Faust.jl/blob/main/src/minimal.jl) architecture file, computes one block of outputs buffers, and display them:
+From a DSP source file, the **faust** compiler is executed with the [Julia backend](https://github.com/grame-cncm/faust/tree/master-dev/compiler/generator/julia) to generate a Julia source file, wrapped by the [minimal.jl](https://github.com/sletz/Faust.jl/blob/main/src/minimal.jl) architecture file, computes one block of outputs buffers, and display the signals:
 
 ```julia
 # Use an existing DSP file
@@ -88,4 +88,3 @@ julia> file = "/fool/bar/osc.dsp"
 julia> compileFaustFile(file)
 
 ```
-

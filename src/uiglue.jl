@@ -34,7 +34,7 @@ mutable struct GlueFns
     addHorizontalBargraph::CFunction
     addVerticalBargraph::CFunction
     # addSoundfile::CFunction
-    # declare::CFunction
+    declare::CFunction
 end
 
 struct UIRange
@@ -60,18 +60,17 @@ mutable struct UIGlue
     addSoundfile::Ptr{Cvoid}
     declare::Ptr{Cvoid}
 
-    paths::Dict{String, Ptr{Float32}}
-    ranges::Dict{String, UIRange}
+    paths::Dict{String,Ptr{Float32}}
+    ranges::Dict{String,UIRange}
     pathBuilder::PathBuilder
     
-
     gluefns::GlueFns
 
     function UIGlue()
         uglue = new()
-        uglue.paths = Dict{String, Ptr{Float32}}()
+        uglue.paths = Dict{String,Ptr{Float32}}()
         uglue.pathBuilder = PathBuilder([])
-        uglue.ranges = Dict{String, UIRange}()
+        uglue.ranges = Dict{String,UIRange}()
         initGlue!(uglue)
     end
 end
@@ -166,6 +165,13 @@ function initGlue!(uglue::UIGlue)
     addVerticalBargraph = @cfunction(
         $_addVerticalBargraph,
         Cvoid, (Ptr{Cvoid}, Cstring, Ptr{Float32}, Float32, Float32))
+
+    function _declare(ui, zone, key, value)::Cvoid
+        nothing
+    end
+    declare = @cfunction(
+        $_declare,
+        Cvoid, (Ptr{Cvoid}, Ptr{Float32}, Cstring, Cstring))
 # // -- soundfiles
     
 # typedef void (* addSoundfileFun) (void* ui_interface, const char* label, const char* url, struct Soundfile** sf_zone);
@@ -184,6 +190,7 @@ function initGlue!(uglue::UIGlue)
         addNumEntry,
         addHorizontalBargraph,
         addVerticalBargraph,
+        declare,
     )
     uglue.openTabBox = uglue.gluefns.openTabBox.ptr
     uglue.openHorizontalBox = uglue.gluefns.openHorizontalBox.ptr
@@ -196,6 +203,7 @@ function initGlue!(uglue::UIGlue)
     uglue.addNumEntry = uglue.gluefns.addNumEntry.ptr
     uglue.addHorizontalBargraph = uglue.gluefns.addHorizontalBargraph.ptr
     uglue.addVerticalBargraph = uglue.gluefns.addVerticalBargraph.ptr
+    uglue.declare = uglue.gluefns.declare.ptr
 
     uglue
 end
