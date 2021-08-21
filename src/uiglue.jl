@@ -1,4 +1,4 @@
-using Base: CFunction, Float32
+using Base: CFunction, Float32, Float64
 
 mutable struct PathBuilder
     controlsLevel::Array{String}
@@ -37,14 +37,14 @@ mutable struct GlueFns
     declare::CFunction
 end
 
-struct UIRange
-    init::Float32
-    min::Float32
-    max::Float32
-    step::Float32
+struct UIRange{T}
+    init::T
+    min::T
+    max::T
+    step::T
 end
 
-mutable struct UIGlue
+mutable struct UIGlue{T}
     uiInterface::Ptr{Cvoid}
     openTabBox::Ptr{Cvoid}
     openHorizontalBox::Ptr{Cvoid}
@@ -60,22 +60,23 @@ mutable struct UIGlue
     addSoundfile::Ptr{Cvoid}
     declare::Ptr{Cvoid}
 
-    paths::Dict{String,Ptr{Float32}}
-    ranges::Dict{String,UIRange}
+    paths::Dict{String,Ptr{T}}
+    ranges::Dict{String,UIRange{T}}
     pathBuilder::PathBuilder
     
     gluefns::GlueFns
 
-    function UIGlue()
-        uglue = new()
-        uglue.paths = Dict{String,Ptr{Float32}}()
+    function UIGlue{T}() where {T} 
+        uglue = new{T}()
+        uglue.paths = Dict{String, Ptr{T}}()
         uglue.pathBuilder = PathBuilder([])
-        uglue.ranges = Dict{String,UIRange}()
+        uglue.ranges = Dict{String, UIRange{T}}()
         initGlue!(uglue)
     end
 end
 
-function initGlue!(uglue::UIGlue)
+function initGlue!(uglue::UIGlue{T}) where {T}
+
     function _openTabBox(ui, label)::Cvoid
         pushLabel!(uglue.pathBuilder, unsafe_string(label))
         nothing
@@ -107,7 +108,7 @@ function initGlue!(uglue::UIGlue)
     end
     addButton = @cfunction(
         $_addButton,
-        Cvoid, (Ptr{Cvoid}, Cstring, Ptr{Float32}))
+        Cvoid, (Ptr{Cvoid}, Cstring, Ptr{T}))
 
     function _addCheckButton(ui, label, zone)::Cvoid
         path = buildPath(uglue.pathBuilder, unsafe_string(label))
@@ -116,7 +117,7 @@ function initGlue!(uglue::UIGlue)
     end
     addCheckButton = @cfunction(
         $_addCheckButton,
-        Cvoid, (Ptr{Cvoid}, Cstring, Ptr{Float32}))
+        Cvoid, (Ptr{Cvoid}, Cstring, Ptr{T}))
 
     function _addVerticalSlider(ui, label, zone, init, fmin, fmax, step)::Cvoid
         path = buildPath(uglue.pathBuilder, unsafe_string(label))
@@ -126,7 +127,7 @@ function initGlue!(uglue::UIGlue)
     end
     addVerticalSlider = @cfunction(
         $_addVerticalSlider,
-        Cvoid, (Ptr{Cvoid}, Cstring, Ptr{Float32}, Float32, Float32, Float32, Float32))
+        Cvoid, (Ptr{Cvoid}, Cstring, Ptr{T}, T, T, T, T))
 
     function _addHorizontalSlider(ui, label, zone, init, fmin, fmax, step)::Cvoid
         path = buildPath(uglue.pathBuilder, unsafe_string(label))
@@ -136,7 +137,7 @@ function initGlue!(uglue::UIGlue)
     end
     addHorizontalSlider = @cfunction(
         $_addHorizontalSlider,
-        Cvoid, (Ptr{Cvoid}, Cstring, Ptr{Float32}, Float32, Float32, Float32, Float32))
+        Cvoid, (Ptr{Cvoid}, Cstring, Ptr{T}, T, T, T, T))
 
     function _addNumEntry(ui, label, zone, init, fmin, fmax, step)::Cvoid
         path = buildPath(uglue.pathBuilder, unsafe_string(label))
@@ -146,7 +147,7 @@ function initGlue!(uglue::UIGlue)
     end
     addNumEntry = @cfunction(
         $_addNumEntry,
-        Cvoid, (Ptr{Cvoid}, Cstring, Ptr{Float32}, Float32, Float32, Float32, Float32))
+        Cvoid, (Ptr{Cvoid}, Cstring, Ptr{T}, T, T, T, T))
 
     function _addHorizontalBargraph(ui, label, zone, fmin, fmax)::Cvoid
         path = buildPath(uglue.pathBuilder, unsafe_string(label))
@@ -155,7 +156,7 @@ function initGlue!(uglue::UIGlue)
     end
     addHorizontalBargraph = @cfunction(
         $_addHorizontalBargraph,
-        Cvoid, (Ptr{Cvoid}, Cstring, Ptr{Float32}, Float32, Float32))
+        Cvoid, (Ptr{Cvoid}, Cstring, Ptr{T}, T, T))
 
     function _addVerticalBargraph(ui, label, zone, fmin, fmax)::Cvoid
         path = buildPath(uglue.pathBuilder, unsafe_string(label))
@@ -164,19 +165,17 @@ function initGlue!(uglue::UIGlue)
     end
     addVerticalBargraph = @cfunction(
         $_addVerticalBargraph,
-        Cvoid, (Ptr{Cvoid}, Cstring, Ptr{Float32}, Float32, Float32))
+        Cvoid, (Ptr{Cvoid}, Cstring, Ptr{T}, T, T))
 
     function _declare(ui, zone, key, value)::Cvoid
         nothing
     end
     declare = @cfunction(
         $_declare,
-        Cvoid, (Ptr{Cvoid}, Ptr{Float32}, Cstring, Cstring))
-# // -- soundfiles
-    
-# typedef void (* addSoundfileFun) (void* ui_interface, const char* label, const char* url, struct Soundfile** sf_zone);
+        Cvoid, (Ptr{Cvoid}, Ptr{T}, Cstring, Cstring))
 
-# typedef void (* declareFun) (void* ui_interface, FAUSTFLOAT* zone, const char* key, const char* value);
+# // -- soundfiles   
+# typedef void (* addSoundfileFun) (void* ui_interface, const char* label, const char* url, struct Soundfile** sf_zone);
     
     uglue.gluefns = GlueFns(
         openTabBox,

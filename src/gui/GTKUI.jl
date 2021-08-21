@@ -14,10 +14,6 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # ************************************************************************
 
-# Architectures files
-#include("../dsp/dsp.jl")
-#include("../gui/UI.jl")
-
 using Gtk, GtkObservables
 
 # GTKUI: a basic GUI developed using the GtkObservables package

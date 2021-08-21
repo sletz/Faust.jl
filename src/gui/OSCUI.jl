@@ -14,11 +14,6 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # ************************************************************************
 
-# Architectures files
-#include("../dsp/dsp.jl")
-#include("../gui//MapUI.jl")
-#include("../gui/meta.jl")
-
 using OpenSoundControl, Sockets, MacroTools
 
 # Retrieve the application name

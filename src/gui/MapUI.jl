@@ -14,34 +14,6 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # ************************************************************************
 
-# Architectures files
-#include("../dsp/dsp.jl")
-#include("../gui/UI.jl")
-
-#=
-# PathBuilder 
-mutable struct PathBuilder
-    controlsLevel::Array{String}
-end
-
-function pushLabel!(builder::PathBuilder, label::String)
-    push!(builder.controlsLevel, label)
-end
-
-function popLabel!(builder::PathBuilder)
-    deleteat!(builder.controlsLevel, lastindex(builder.controlsLevel))
-end
-
-function buildPath(builder::PathBuilder, label::String)
-    path = join(builder.controlsLevel, "/")
-    res = "/$path/$label"
-    for c in [' ', '#', '*', ',', '?', '[', ']', '{', '}', '(', ')'] 
-        res = replace(res, c => '_')
-    end
-    res
-end
-=#
-
 # UIZone with for sliders, nentries and bargraph
 struct UIZone
     field::Symbol

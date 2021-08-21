@@ -50,5 +50,5 @@ end
 function buildUserInterface!(dsp::dsp, ui_interface::UI)
 end
 
-function compute!(dsp::dsp, count::Int32, inputs, outputs)
+function compute!(dsp::dsp, count::Int32, inputs::Matrix{FAUSTFLOAT}, outputs::Matrix{FAUSTFLOAT})
 end

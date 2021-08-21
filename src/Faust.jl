@@ -74,7 +74,7 @@ function init!(d::DSPBlock{T}; block_size=256, samplerate=44100) where T <: Faus
 
     d.dsp = createCDSPInstance(d.factory)
     initCDSPInstance(d.dsp, d.samplerate)
-    d.ui = UIGlue()
+    d.ui = UIGlue{T}()
     buildUserInterfaceCDSPInstance(d.dsp, d.ui)
     input_channels = getNumInputsCDSPInstance(d.dsp)
     output_channels = getNumOutputsCDSPInstance(d.dsp)
@@ -223,8 +223,8 @@ function compileFaustFile(file)
     include(file * ".jl")
 end
 
-function compileFaustString(code)
-    block = compile(code)
+function compileFaustString(code; argv=[])
+    block = compile(code; argv)
     block = init!(block; block_size=256, samplerate=44100) 
     outputs = compute!(block)
     display(plot(outputs, layout = (getNumOutputsCDSPInstance(block.dsp), 1)))
