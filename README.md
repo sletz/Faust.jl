@@ -74,6 +74,12 @@ julia> code = """import("stdfaust.lib"); process = os.osc(500), os.sawtooth(1000
 
 # Compile the DSP, compute one block of audio and display the outputs
 julia> compileFaustString(code)
+
+# Compile the DSP, with aditionals compile arguments and display the outputs
+julia> compileFaustString(code; argv=["-double", "-vec"])
+
+# Compile the DSP, with a larger block_size and display the outputs
+julia> compileFaustString(code; block_size=50000)
 ```
 
 ## Using the Julia backend

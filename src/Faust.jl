@@ -216,6 +216,11 @@ end
 
 # Export
 
+"""
+compileFaustFile(file)
+
+Compiles the DSP `file` and display the outputs.
+"""
 function compileFaustFile(file)
     name = file2name(file)
     arch = faustPath() * "/minimal.jl"
@@ -223,11 +228,23 @@ function compileFaustFile(file)
     include(file * ".jl")
 end
 
-function compileFaustString(code; argv=[])
-    block = compile(code; argv)
-    block = init!(block; block_size=256, samplerate=44100) 
-    outputs = compute!(block)
-    display(plot(outputs, layout = (getNumOutputsCDSPInstance(block.dsp), 1)))
+"""
+compileFaustString(code; argv=[], block_size=256, samplerate=44100)
+
+Compiles the DSP `code` and display the outputs.
+
+# Arguments
+- `argv::Vector{String}`: List of args to the Faust compiler, e.g.
+    "-double": double precision
+    "-vec": vectorize code.
+- `block_size::Integer`: block size in samples to render
+- `samplerate::Integer`: sample rate to be used".
+"""
+function compileFaustString(code; argv=[], block_size=256, samplerate=44100)
+    dsp_block = compile(code; argv)
+    dsp_block = init!(dsp_block; block_size, samplerate) 
+    outputs = compute!(dsp_block)
+    display(plot(outputs, layout = (getNumOutputsCDSPInstance(dsp_block.dsp), 1)))
 end
 
 export compileFaustFile, compileFaustString
