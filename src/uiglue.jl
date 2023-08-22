@@ -15,7 +15,7 @@ end
 function buildPath(builder::PathBuilder, label::String)
     path = join(builder.controlsLevel, "/")
     res = "/$path/$label"
-    for c in [' ', '#', '*', ',', '?', '[', ']', '{', '}', '(', ')'] 
+    for c in [' ', '#', '*', ',', '?', '[', ']', '{', '}', '(', ')']
         res = replace(res, c => '_')
     end
     res
@@ -63,17 +63,19 @@ mutable struct UIGlue{T}
     paths::Dict{String,Ptr{T}}
     ranges::Dict{String,UIRange{T}}
     pathBuilder::PathBuilder
-    
+
     gluefns::GlueFns
 
-    function UIGlue{T}() where {T} 
+    function UIGlue{T}() where {T}
         uglue = new{T}()
-        uglue.paths = Dict{String, Ptr{T}}()
+        uglue.paths = Dict{String,Ptr{T}}()
         uglue.pathBuilder = PathBuilder([])
-        uglue.ranges = Dict{String, UIRange{T}}()
+        uglue.ranges = Dict{String,UIRange{T}}()
         initGlue!(uglue)
     end
 end
+
+
 
 function initGlue!(uglue::UIGlue{T}) where {T}
 
@@ -82,13 +84,13 @@ function initGlue!(uglue::UIGlue{T}) where {T}
         nothing
     end
     openTabBox = @cfunction($_openTabBox, Cvoid, (Ptr{Cvoid}, Cstring))
-    
+
     function _openHorizontalBox(ui, label)::Cvoid
         pushLabel!(uglue.pathBuilder, unsafe_string(label))
         nothing
     end
     openHorizontalBox = @cfunction($_openHorizontalBox, Cvoid, (Ptr{Cvoid}, Cstring))
-    
+
     function _openVerticalBox(ui, label)::Cvoid
         pushLabel!(uglue.pathBuilder, unsafe_string(label))
         nothing
@@ -127,7 +129,7 @@ function initGlue!(uglue::UIGlue{T}) where {T}
     end
     addVerticalSlider = @cfunction(
         $_addVerticalSlider,
-        Cvoid, (Ptr{Cvoid}, Cstring, Ptr{T}, T, T, T, T))
+        Cvoid, (Ptr{Cvoid}, Cstring, Ptr{T}, Any, Any, Any, Any))
 
     function _addHorizontalSlider(ui, label, zone, init, fmin, fmax, step)::Cvoid
         path = buildPath(uglue.pathBuilder, unsafe_string(label))
@@ -137,7 +139,7 @@ function initGlue!(uglue::UIGlue{T}) where {T}
     end
     addHorizontalSlider = @cfunction(
         $_addHorizontalSlider,
-        Cvoid, (Ptr{Cvoid}, Cstring, Ptr{T}, T, T, T, T))
+        Cvoid, (Ptr{Cvoid}, Cstring, Ptr{T}, Any, Any, Any, Any))
 
     function _addNumEntry(ui, label, zone, init, fmin, fmax, step)::Cvoid
         path = buildPath(uglue.pathBuilder, unsafe_string(label))
@@ -147,7 +149,7 @@ function initGlue!(uglue::UIGlue{T}) where {T}
     end
     addNumEntry = @cfunction(
         $_addNumEntry,
-        Cvoid, (Ptr{Cvoid}, Cstring, Ptr{T}, T, T, T, T))
+        Cvoid, (Ptr{Cvoid}, Cstring, Ptr{T}, Any, Any, Any, Any))
 
     function _addHorizontalBargraph(ui, label, zone, fmin, fmax)::Cvoid
         path = buildPath(uglue.pathBuilder, unsafe_string(label))
@@ -156,7 +158,7 @@ function initGlue!(uglue::UIGlue{T}) where {T}
     end
     addHorizontalBargraph = @cfunction(
         $_addHorizontalBargraph,
-        Cvoid, (Ptr{Cvoid}, Cstring, Ptr{T}, T, T))
+        Cvoid, (Ptr{Cvoid}, Cstring, Ptr{T}, Any, Any))
 
     function _addVerticalBargraph(ui, label, zone, fmin, fmax)::Cvoid
         path = buildPath(uglue.pathBuilder, unsafe_string(label))
@@ -165,7 +167,7 @@ function initGlue!(uglue::UIGlue{T}) where {T}
     end
     addVerticalBargraph = @cfunction(
         $_addVerticalBargraph,
-        Cvoid, (Ptr{Cvoid}, Cstring, Ptr{T}, T, T))
+        Cvoid, (Ptr{Cvoid}, Cstring, Ptr{T}, Any, Any))
 
     function _declare(ui, zone, key, value)::Cvoid
         nothing
@@ -174,9 +176,9 @@ function initGlue!(uglue::UIGlue{T}) where {T}
         $_declare,
         Cvoid, (Ptr{Cvoid}, Ptr{T}, Cstring, Cstring))
 
-# // -- soundfiles   
-# typedef void (* addSoundfileFun) (void* ui_interface, const char* label, const char* url, struct Soundfile** sf_zone);
-    
+    # // -- soundfiles   
+    # typedef void (* addSoundfileFun) (void* ui_interface, const char* label, const char* url, struct Soundfile** sf_zone);
+
     uglue.gluefns = GlueFns(
         openTabBox,
         openHorizontalBox,
