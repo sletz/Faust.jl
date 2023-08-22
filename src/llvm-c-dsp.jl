@@ -67,7 +67,7 @@ function createCDSPFactoryFromString(
             Ptr{llvm_dsp_factory},
             (Cstring, Cstring, Cint, Ptr{Cstring}, Cstring, Ptr{UInt8}, Cint),
             name_app, dsp_content, argc, argv, target, error_msg, opt_level,
-        ), "/usr/local/share/faust")
+        ), dirname(stdfaust_lib))
     if output_ptr == C_NULL
         error = GC.@preserve error_msg unsafe_string(pointer(error_msg))
         throw(ErrorException("Could not initialize C DSP factory: $error"))
