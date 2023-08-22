@@ -129,7 +129,7 @@ function initGlue!(uglue::UIGlue{T}) where {T}
     end
     addVerticalSlider = @cfunction(
         $_addVerticalSlider,
-        Cvoid, (Ptr{Cvoid}, Cstring, Ptr{T}, Any, Any, Any, Any))
+        Cvoid, (Ptr{Cvoid}, Cstring, Ptr{T}, Cfloat, Cfloat, Cfloat, Cfloat))
 
     function _addHorizontalSlider(ui, label, zone, init, fmin, fmax, step)::Cvoid
         path = buildPath(uglue.pathBuilder, unsafe_string(label))
@@ -139,7 +139,7 @@ function initGlue!(uglue::UIGlue{T}) where {T}
     end
     addHorizontalSlider = @cfunction(
         $_addHorizontalSlider,
-        Cvoid, (Ptr{Cvoid}, Cstring, Ptr{T}, Any, Any, Any, Any))
+        Cvoid, (Ptr{Cvoid}, Cstring, Ptr{T}, Cfloat, Cfloat, Cfloat, Cfloat))
 
     function _addNumEntry(ui, label, zone, init, fmin, fmax, step)::Cvoid
         path = buildPath(uglue.pathBuilder, unsafe_string(label))
@@ -149,7 +149,7 @@ function initGlue!(uglue::UIGlue{T}) where {T}
     end
     addNumEntry = @cfunction(
         $_addNumEntry,
-        Cvoid, (Ptr{Cvoid}, Cstring, Ptr{T}, Any, Any, Any, Any))
+        Cvoid, (Ptr{Cvoid}, Cstring, Ptr{T}, Cfloat, Cfloat, Cfloat, Cfloat))
 
     function _addHorizontalBargraph(ui, label, zone, fmin, fmax)::Cvoid
         path = buildPath(uglue.pathBuilder, unsafe_string(label))
@@ -158,7 +158,7 @@ function initGlue!(uglue::UIGlue{T}) where {T}
     end
     addHorizontalBargraph = @cfunction(
         $_addHorizontalBargraph,
-        Cvoid, (Ptr{Cvoid}, Cstring, Ptr{T}, Any, Any))
+        Cvoid, (Ptr{Cvoid}, Cstring, Ptr{T}, Cfloat, Cfloat))
 
     function _addVerticalBargraph(ui, label, zone, fmin, fmax)::Cvoid
         path = buildPath(uglue.pathBuilder, unsafe_string(label))
@@ -167,7 +167,7 @@ function initGlue!(uglue::UIGlue{T}) where {T}
     end
     addVerticalBargraph = @cfunction(
         $_addVerticalBargraph,
-        Cvoid, (Ptr{Cvoid}, Cstring, Ptr{T}, Any, Any))
+        Cvoid, (Ptr{Cvoid}, Cstring, Ptr{T}, Cfloat, Cfloat))
 
     function _declare(ui, zone, key, value)::Cvoid
         nothing

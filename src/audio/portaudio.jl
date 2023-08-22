@@ -26,11 +26,11 @@ mutable struct portaudio <: audio
         driver.buffer_size = buffer_size
         driver.sample_rate = sample_rate
         driver
-    end 
+    end
     dsp::dsp
     buffer_size::Int
     sample_rate::Int
-    name::String        
+    name::String
 end
 
 function init!(driver::portaudio, name::String, dsp::dsp)

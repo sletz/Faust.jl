@@ -14,7 +14,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # ************************************************************************
 
-using Gtk, GtkObservables
+using Gtk4, GtkObservables
 
 # GTKUI: a basic GUI developed using the GtkObservables package
 mutable struct GTKUI <: UI
@@ -22,9 +22,9 @@ mutable struct GTKUI <: UI
         gtk_ui = new()
         gtk_ui.dsp = dsp
         gtk_ui.box = GtkBox(:v)
-        gtk_ui.window = GtkWindow("Faust Program", 400, 200) |> gtk_ui.box
+        gtk_ui.window = GtkWindow("Faust Program", 400, 200)
         gtk_ui
-	end
+    end
     dsp::dsp
     window
     box
@@ -50,7 +50,7 @@ function run!(ui_interface::GTKUI)
 end
 
 # -- active widgets
-function addButton!(ui_interface::GTKUI, label::String, param::Symbol) 
+function addButton!(ui_interface::GTKUI, label::String, param::Symbol)
     button = GtkObservables.button(label)
     obs_func = on(observable(button)) do val
         setproperty!(ui_interface.dsp, param, FAUSTFLOAT(1.0))
@@ -61,7 +61,7 @@ function addButton!(ui_interface::GTKUI, label::String, param::Symbol)
     push!(ui_interface.box, button)
 end
 
-function addCheckButton!(ui_interface::GTKUI, label::String, param::Symbol) 
+function addCheckButton!(ui_interface::GTKUI, label::String, param::Symbol)
     checkbox = GtkObservables.checkbox()
     obs_func = on(observable(checkbox)) do val
         setproperty!(ui_interface.dsp, param, FAUSTFLOAT(val))
@@ -69,7 +69,7 @@ function addCheckButton!(ui_interface::GTKUI, label::String, param::Symbol)
     push!(ui_interface.box, checkbox)
 end
 
-function addHorizontalSlider!(ui_interface::GTKUI, label::String, param::Symbol, init::FAUSTFLOAT, min::FAUSTFLOAT, max::FAUSTFLOAT, step::FAUSTFLOAT) 
+function addHorizontalSlider!(ui_interface::GTKUI, label::String, param::Symbol, init::FAUSTFLOAT, min::FAUSTFLOAT, max::FAUSTFLOAT, step::FAUSTFLOAT)
     slider = GtkObservables.slider(min:max, value=init, orientation="horizontal")
     label_str = GtkObservables.label(label)
     obs_func = on(observable(slider)) do val
@@ -81,7 +81,7 @@ function addHorizontalSlider!(ui_interface::GTKUI, label::String, param::Symbol,
     push!(ui_interface.box, box)
 end
 
-function addVerticalSlider!(ui_interface::GTKUI, label::String, param::Symbol, init::FAUSTFLOAT, min::FAUSTFLOAT, max::FAUSTFLOAT, step::FAUSTFLOAT) 
+function addVerticalSlider!(ui_interface::GTKUI, label::String, param::Symbol, init::FAUSTFLOAT, min::FAUSTFLOAT, max::FAUSTFLOAT, step::FAUSTFLOAT)
     slider = GtkObservables.slider(min:max, value=init, orientation="vertical")
     set_gtk_property!(slider, :expand, true)
     label_str = GtkObservables.label(label)
@@ -94,7 +94,7 @@ function addVerticalSlider!(ui_interface::GTKUI, label::String, param::Symbol, i
     push!(ui_interface.box, box)
 end
 
-function addNumEntry!(ui_interface::GTKUI, label::String, param::Symbol, init::FAUSTFLOAT, min::FAUSTFLOAT, max::FAUSTFLOAT, step::FAUSTFLOAT) 
+function addNumEntry!(ui_interface::GTKUI, label::String, param::Symbol, init::FAUSTFLOAT, min::FAUSTFLOAT, max::FAUSTFLOAT, step::FAUSTFLOAT)
     nentry = GtkObservables.textbox(FAUSTFLOAT; range=min:max, value=string(init))
     label_str = GtkObservables.label(label)
     obs_func = on(observable(nentry)) do val

@@ -3,12 +3,12 @@ using faust_jll
 
 include("uiglue.jl")
 
-export llvm_dsp, llvm_dsp_factory, 
-    createCDSPFactoryFromString, 
+export llvm_dsp, llvm_dsp_factory,
+    createCDSPFactoryFromString,
     writeCDSPFactoryToIR,
     createCDSPInstance,
     getNumInputsCDSPInstance,
-    getNumOutputsCDSPInstance,    
+    getNumOutputsCDSPInstance,
     buildUserInterfaceCDSPInstance,
     getSampleRateCDSPInstance,
     initCDSPInstance,
@@ -63,11 +63,11 @@ function createCDSPFactoryFromString(
     argc = length(argv)
     error_msg = Vector{UInt8}(undef, 4096)
     output_ptr = cd(() -> ccall(
-        (:createCDSPFactoryFromString, libfaust),
-        Ptr{llvm_dsp_factory},
-        (Cstring, Cstring, Cint, Ptr{Cstring}, Cstring, Ptr{UInt8}, Cint),
-        name_app, dsp_content, argc, argv, target, error_msg, opt_level,
-    ), dirname(stdfaust_lib))
+            (:createCDSPFactoryFromString, libfaust),
+            Ptr{llvm_dsp_factory},
+            (Cstring, Cstring, Cint, Ptr{Cstring}, Cstring, Ptr{UInt8}, Cint),
+            name_app, dsp_content, argc, argv, target, error_msg, opt_level,
+        ), dirname(stdfaust_lib))
     if output_ptr == C_NULL
         error = GC.@preserve error_msg unsafe_string(pointer(error_msg))
         throw(ErrorException("Could not initialize C DSP factory: $error"))
@@ -269,7 +269,7 @@ function metadataCDSPInstance(dsp, meta)
 end
 
 # void computeCDSPInstance(llvm_dsp* dsp, int count, FAUSTFLOAT** input, FAUSTFLOAT** output);
-function computeCDSPInstance(dsp, count, input = nothing, output = nothing)
+function computeCDSPInstance(dsp, count, input=nothing, output=nothing)
     if isnothing(input)
         inputChannels = getNumInputsCDSPInstance(dsp)
         input = zeros(Float32, count, inputChannels)
@@ -278,8 +278,8 @@ function computeCDSPInstance(dsp, count, input = nothing, output = nothing)
         outputChannels = getNumOutputsCDSPInstance(dsp)
         output = zeros(Float32, count, outputChannels)
     end
-    inputRef = [pointer(input, i) for i=1:size(input, 1):length(input)]
-    outputRef = [pointer(output, i) for i=1:size(output, 1):length(output)]
+    inputRef = [pointer(input, i) for i = 1:size(input, 1):length(input)]
+    outputRef = [pointer(output, i) for i = 1:size(output, 1):length(output)]
 
     ccall(
         (:computeCDSPInstance, libfaust),

@@ -1,7 +1,7 @@
 name = "Faust"
 uuid = "b0df9959-3f7b-4e37-9fbf-63cb195e8303"
 authors = ["Cora Johnson-Roberson <corajr@pm.me> and contributors"]
-version = "0.2.0"
+version = "0.2.1"
 
 [deps]
 faust_jll = "ee02ff01-307c-5f43-b4c2-04ffc4645b0f"
@@ -11,6 +11,7 @@ OpenSoundControl = "2ff8ee2d-9747-4b2b-b699-45d473b7b9df"
 Sockets = "6462fe0b-24de-5631-8697-dd941f90decc"
 MacroTools = "1914dd2f-81c6-5fcd-8719-6d5c9610ff09"
 Gtk = "4c0ca9eb-093a-5379-98c5-f87ac0bbbf44"
+Gtk4 = "^0.5.0"
 GtkObservables = "8710efd8-4ad6-11eb-33ea-2d5ceb25a41c"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 
